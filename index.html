@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b0b12">
+  <title>convert.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b0b12;
+      --panel: #151520;
+      --border: #29293a;
+      --muted: #85859b;
+      --accent: #a78bfa;
+    }
+    * { box-sizing: border-box; }
+    html { min-height: 100%; background: var(--bg); }
+    body {
+      min-height: 100svh;
+      margin: 0;
+      padding: max(22px, env(safe-area-inset-top)) 18px max(22px, env(safe-area-inset-bottom));
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(ellipse at 50% 0%, #282044 0%, transparent 52%),
+        var(--bg);
+      color: #f5f3ff;
+      font-family: "Comfortaa", system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    main { width: min(100%, 680px); }
+    .top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 0 3px 16px;
+    }
+    .brand {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -.06em;
+      color: #c4b5fd;
+    }
+    .hint { color: var(--muted); font-size: 11px; text-align: right; }
+    .editor {
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 23px;
+      background: linear-gradient(145deg, #191927, #11111a);
+      box-shadow: 0 22px 70px #0008, inset 0 1px #ffffff0a;
+    }
+    textarea {
+      display: block;
+      width: 100%;
+      min-height: clamp(230px, 42svh, 390px);
+      padding: 10px;
+      border: 0;
+      outline: 0;
+      resize: vertical;
+      border-radius: 12px;
+      background: transparent;
+      color: #f5f3ff;
+      font: 500 17px/1.75 "Comfortaa", system-ui, sans-serif;
+      caret-color: var(--accent);
+      overflow-wrap: anywhere;
+      -webkit-tap-highlight-color: transparent;
+    }
+    textarea::placeholder { color: #68687d; opacity: 1; }
+    textarea:focus-visible { box-shadow: inset 0 0 0 1px #a78bfa44; }
+    button {
+      display: block;
+      width: 100%;
+      min-height: 54px;
+      margin-top: 12px;
+      padding: 15px 20px;
+      border: 0;
+      border-radius: 15px;
+      background: linear-gradient(100deg, #c4b5fd, #8b5cf6);
+      color: #100c1d;
+      font: 700 14px/1 "Comfortaa", system-ui, sans-serif;
+      letter-spacing: .08em;
+      cursor: pointer;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      transition: filter .15s ease, transform .15s ease;
+    }
+    button:active { transform: scale(.985); filter: brightness(.96); }
+    button:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+    .foot {
+      margin: 13px 4px 0;
+      color: #77778c;
+      font-size: 10px;
+      line-height: 1.6;
+      text-align: center;
+    }
+    @media (hover: hover) {
+      button:hover { filter: brightness(1.08); transform: translateY(-1px); }
+    }
+    @media (max-width: 420px) {
+      body { padding-left: 13px; padding-right: 13px; }
+      .editor { padding: 12px; border-radius: 19px; }
+      textarea { min-height: 38svh; font-size: 16px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header class="top">
+      <div class="brand">convert.</div>
+      <div class="hint">type anything. flip the case.</div>
+    </header>
+
+    <section class="editor" aria-label="Text converter">
+      <textarea id="text" placeholder="type something here..." aria-label="Text to convert" spellcheck="false"></textarea>
+      <button id="convert" type="button">convert</button>
+    </section>
+
+    <p class="foot">lowercase → UPPERCASE → lowercase → UPPERCASE</p>
+  </main>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const textBox = document.getElementById("text");
+      const convertButton = document.getElementById("convert");
+
+      function convertAlternatingCase(value) {
+        let makeUppercase = false;
+
+        return Array.from(value, character => {
+          // Leave spaces, punctuation, numbers and emoji unchanged.
+          if (!/\p{L}/u.test(character)) return character;
+
+          const result = makeUppercase
+            ? character.toLocaleUpperCase()
+            : character.toLocaleLowerCase();
+
+          makeUppercase = !makeUppercase;
+          return result;
+        }).join("");
+      }
+
+      convertButton.addEventListener("click", () => {
+        textBox.value = convertAlternatingCase(textBox.value);
+        textBox.focus({ preventScroll: true });
+      });
+    })();
+  </script>
+</body>
+</html>
